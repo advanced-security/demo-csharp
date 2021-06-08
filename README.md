@@ -1,6 +1,6 @@
-# Code Scanning Javascript Tutorial
+# Code Scanning C# Tutorial
 
-Welcome to the Code Scanning Java Tutorial! This tutorial will take you through how to set up Github Advanced Security: Code Scanning as well as interpret results that it may find. The following repository contains SQL injection vulnerability for demonstration purpose.
+Welcome to the Code Scanning C# Tutorial! This tutorial will take you through how to set up Github Advanced Security: Code Scanning as well as interpret results that it may find. The following repository contains cross-site scripting vulnerability for demonstration purpose.
 
 ## Introduction
 
@@ -62,6 +62,10 @@ The Actions Workflow file contains a number of different sections including:
 
 <img src="images/03-actions-sample-workflow.png" width="80%"/>
 
+Please change `line 35` to only use `csharp` for this demonstration purpose.
+
+<img src="images/03a-csharp-scanning.png" width="80%"/>
+
 Click `Start Commit` -> `Commit this file` to commit the changes to _main_ branch.
 </p>
 </details>
@@ -107,7 +111,9 @@ Click the specific workflow run. You can view the progress of the Workflow run u
 <summary>Security Issues</summary>
 <p>
   
-Once the Workflow has completed, click the `Security` tab -> ` Code Scanning Alerts`. An security alert "Query built from user-controlled sources" should be visible.
+Once the Workflow has completed, click the `Security` tab -> ` Code Scanning Alerts`. You can see 29 alerts, select the first "Cross-site scripting" alert.
+
+<img src="images/06-select-cross-site-scripting.png" width="80%"/>
 
 #### Security Alert View
 
@@ -157,13 +163,13 @@ Click `show paths` in order to see the dataflow path that resulted in this alert
   
 <summary>Fix the Security Alert</summary>
 
-In order to fix this specific alert, we will need to ensure parameters used in the SQL query is validated and sanitized.
+In order to fix this specific alert, we will need to ensure the content being write to the `HttpContext`'s response is validated and sanitized.
 
-Click on the `Code` tab and [Edit](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-your-repository) the file [`IndexController.java`](./src/main/java/com/github/hackathon/advancedsecurityjava/Controllers/IndexController.java) in the `Controllers` folder, replace the content with the file [`fixme`](./fixme).
+Click on the `Code` tab and [Edit](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-your-repository) the file [`Autocomplete.ashx.cs`](./WebGoat/WebGoatCoins/Autocomplete.ashx.cs) in the `WebGoat/WebGoatCoins` folder. For this demonstration purpose, we will simply write some hardcoded value to the `HttpContext` instance, this granatees the parameter is sanitized and safe.
 
 <img src="images/11-fix-source-code.png" width="80%"/>
 
-Click `Create a new branch for this commit and start a pull request`, name the branch `fix-sql-injection`, and create the Pull Request.
+Click `Create a new branch for this commit and start a pull request`, name the branch `fix-cross-site-scripting`, and create the Pull Request.
 
 #### Pull Request Status Check
 
@@ -179,7 +185,7 @@ After the Workflow has completed click on `Details` by the `Code Scanning Result
 
 #### Fixed Alert
 
-Notice that Code Scanning has detected that this Pull Request will fix the SQL injection vulnerability that was detected before.
+Notice that Code Scanning has detected that this Pull Request will fix the cross-site scripting vulnerability that was detected before.
 
 <img src="images/14-fix-detail.png" width="80%"/>
 
@@ -187,7 +193,7 @@ Merge the Pull Request. After the Pull Request has been merged, another Workflow
 
 #### Closed Security Alerts
 
-After the final Workflow has completed, navigate back to the `Security` tab and click `Closed`. Notice that the **Query built from user-controlled sources** security alert now shows up as a closed issue.
+After the final Workflow has completed, navigate back to the `Security` tab and click `Closed`. Notice that the **Cross-site scripting** security alert now shows up as a closed issue.
 
 <img src="images/15-fixed-alert.png" width="80%"/>
 
