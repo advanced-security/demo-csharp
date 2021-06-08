@@ -1,0 +1,15 @@
+# Project Files #
+#################
+*.userprefs
+*.pidb
+*.suo
+*swp
+bin
+obj
+WebGoat/App_Data/*.txt
+*.sqlite*
+WebGoat/Configuration/*.config
+
+# Trash Files #
+###############
+.DS_Store
