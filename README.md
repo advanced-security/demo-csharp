@@ -1,6 +1,6 @@
 # Code Scanning C# Tutorial
 
-Welcome to the Code Scanning C# Tutorial! This tutorial will take you through how to set up Github Advanced Security: Code Scanning as well as interpret results that it may find. The following repository contains cross-site scripting vulnerability for demonstration purpose.
+Welcome to the Code Scanning C# Tutorial! This tutorial will take you through how to set up Github Advanced Security: Code Scanning as well as interpret results that it may find. The following repository contains a cross-site scripting vulnerability for demonstration purpose.
 
 ## Introduction
 
@@ -39,7 +39,7 @@ Click `Set up code scanning`.
 
 #### Setup Workflow
 
-Click the `Setup this workflow` button by CodeQL Analysis.
+Click the `Configure CodeQL alerts` button.
 
 <img src="images/02-repo-security-setup-codeql-workflow.png" width="70%"/>
 
@@ -163,7 +163,7 @@ Click `show paths` in order to see the dataflow path that resulted in this alert
   
 <summary>Fix the Security Alert</summary>
 
-In order to fix this specific alert, we will need to ensure the content being write to the `HttpContext`'s response is validated and sanitized.
+In order to fix this specific alert, we will need to ensure the content being written to the `HttpContext`'s response is both validated and sanitized.
 
 Click on the `Code` tab and [Edit](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-your-repository) the file [`Autocomplete.ashx.cs`](./WebGoat/WebGoatCoins/Autocomplete.ashx.cs) in the `WebGoat/WebGoatCoins` folder. For this demonstration purpose, we will simply write some hardcoded value to the `HttpContext` instance, this granatees the parameter is sanitized and safe.
 
