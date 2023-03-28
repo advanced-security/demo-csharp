@@ -43,7 +43,7 @@ Click the `Configure CodeQL alerts` button.
 
 <img src="images/02-repo-security-setup-codeql-workflow.png" width="70%"/>
 
-This will create a GitHub Actions Workflow file with CodeQL already set up. Since Java is a compiled language you will need to setup the build in later steps. See the [documentation](https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/running-codeql-code-scanning-in-your-ci-system) if you would like to configure CodeQL Analysis with a 3rd party CI system instead of using GitHub Actions.
+This will create a GitHub Actions Workflow file with CodeQL already set up. Since C# is a compiled language you will need to setup the build in later steps. See the [documentation](https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/running-codeql-code-scanning-in-your-ci-system) if you would like to configure CodeQL Analysis with a 3rd party CI system instead of using GitHub Actions.
 </p>
 </details>
 
