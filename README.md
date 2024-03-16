@@ -1,14 +1,14 @@
 # Code Scanning C# Tutorial
 
-Welcome to the Code Scanning C# Tutorial! This tutorial will take you through how to set up Github Advanced Security: Code Scanning as well as interpret results that it may find. The following repository contains cross-site scripting vulnerability for demonstration purpose.
+Welcome to the Code Scanning C# Tutorial! This tutorial will take you through how to set up GitHub Advanced Security's Code Scanning, as well as interpret results that it may find. The following repository contains cross-site scripting vulnerabilities for demonstration purposes.
 
 ## Introduction
 
-Code scanning is a feature that you use to analyze the code in a GitHub repository to find security vulnerabilities and coding errors. Any problems identified by the analysis are shown in GitHub.
+Code Scanning is a feature that you use to analyze the code in a GitHub repository to find security vulnerabilities and coding errors. Any problems identified by the analysis are shown in GitHub.
 
-You can use code scanning with CodeQL, a semantic code analysis engine. CodeQL treats code as data, allowing you to find potential vulnerabilities in your code with greater confidence than traditional static analyzers.
+You can use Code Scanning with CodeQL, a semantic code analysis engine. CodeQL treats code as data, allowing you to find potential vulnerabilities in your code with greater confidence than traditional static analyzers.
 
-This tutorial with use CodeQL Analysis with Code Scanning in order to search for vulnerabilities within your code. 
+This tutorial will use CodeQL analysis with Code Scanning in order to search for vulnerabilities within your code. 
 
 ## Instructions
 
@@ -55,6 +55,7 @@ This will create a GitHub Actions Workflow file with CodeQL already set up. Sinc
 #### Actions Workflow
 
 The Actions Workflow file contains a number of different sections including:
+
 1. Checking out the repository
 2. Initializing the CodeQL Action
 3. Running Autobuilder (or code your own build steps if autobuild doesn't work)
@@ -62,11 +63,11 @@ The Actions Workflow file contains a number of different sections including:
 
 <img src="images/03-actions-sample-workflow.png" width="80%"/>
 
-Please change `line 35` to only use `csharp` for this demonstration purpose.
+Please change `line 35` to only use `csharp` for this demonstration.
 
 <img src="images/03a-csharp-scanning.png" width="80%"/>
 
-Click `Start Commit` -> `Commit this file` to commit the changes to _main_ branch.
+Click `Start Commit` -> `Commit this file` to commit the changes to the _main_ branch.
 </p>
 </details>
 
@@ -77,15 +78,15 @@ Click `Start Commit` -> `Commit this file` to commit the changes to _main_ branc
 
 #### Workflow triggers
 
-There are a [number of events](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows) that can trigger a GitHub Actions workflow. In this example, the workflow will be triggered on
+There are a [number of events](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows) that can trigger a GitHub Actions workflow. In this example, the workflow will be triggered on:
 
 <img src="images/04-actions-sample-events.png" width="50%"/>
 
-- push to _main_ branch
-- pull request to merge to _main_ branch
+- push to the _main_ branch
+- pull request to merge to the _main_ branch
 - on schedule, at 6:33 every Thursday
 
-Setting up the new CodeQL workflow and committing it to _main_ branch in the step above will trigger the scan.
+Setting up the new CodeQL workflow and committing it to the _main_ branch in the step above will trigger the scan.
 
 </p>
 </details>
@@ -117,13 +118,13 @@ Once the Workflow has completed, click the `Security` tab -> ` Code Scanning Ale
 
 #### Security Alert View
 
-Clicking on the security alert will provide details about the security alert including: <br/>
-<ul>
-<li>A description of the issue </li>
-<li>A tag to the CWE that it is connected to as well as the type of alert (Error, Warning, Note)</li>
-<li>The line of code that triggered the security alert</li>
-<li>The ability to dismiss the alert depending on certain conditions (`False positive`? `Won't fix`? `Used in tests`?)</li>
-</ul>
+Clicking on the security alert will provide details about the security alert including:
+
+- A description of the issue
+- A tag to the CWE that it is connected to as well as the type of alert (Error, Warning, Note)
+- The line of code that triggered the security alert
+- The ability to dismiss the alert depending on certain conditions (`False positive`? `Won't fix`? `Used in tests`?)
+
 <img src="images/06-security-codeql-alert.png" width="80%"/>
 
 #### Security Alert Description
@@ -208,7 +209,7 @@ Click on the security alert and notice that it details when the fix was made, by
   
 ## Next Steps
 
-Ready to talk about advanced security features for GitHub Enterprise? [Contact Sales](https://enterprise.github.com/contact) for more information!
+Ready to talk about Advanced Security features for GitHub Enterprise? [Contact Sales](https://enterprise.github.com/contact) for more information!
 
 Check out [GitHub's Security feature page](https://github.com/features/security) for more security features embedded into GitHub.
 
