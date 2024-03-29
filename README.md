@@ -209,6 +209,8 @@ Click on the security alert and notice that it details when the fix was made, by
   
 ## Next Steps
 
+Adding an extra line.
+
 Ready to talk about Advanced Security features for GitHub Enterprise? [Contact Sales](https://enterprise.github.com/contact) for more information!
 
 Check out [GitHub's Security feature page](https://github.com/features/security) for more security features embedded into GitHub.
