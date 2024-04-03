@@ -30,7 +30,12 @@ namespace OWASP.WebGoat.NET.WebGoatCoins
             if (json != null && json.Length > 0)
             {
                 context.Response.ContentType = "text/plain";
+
+                //uncomment the below line for security scan demo
                 context.Response.Write(json);
+
+                //uncomment the line below to demo that security scan is fixed.
+                //context.Response.Write("Fixing the issue for demo purposes");
             }
             else
             {
