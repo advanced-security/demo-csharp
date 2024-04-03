@@ -32,10 +32,10 @@ namespace OWASP.WebGoat.NET.WebGoatCoins
                 context.Response.ContentType = "text/plain";
 
                 //uncomment the below line for security scan demo
-                //context.Response.Write(json);
+                context.Response.Write(json);
 
                 //uncomment the line below to demo that security scan is fixed.
-                context.Response.Write("Fixing the issue for demo purposes");
+                //context.Response.Write("Fixing the issue for demo purposes");
             }
             else
             {
