@@ -3,6 +3,8 @@
 * Download zip: https://github.com/jerryhoff/WebGoat.NET/zipball/master
 ****************************************************************************
 
+Added some new cool feature
+
 This web application is a learning platform that attempts to teach about
 common web security flaws. It contains generic security flaws that apply to
 most web applications. It also contains lessons that specifically pertain to
