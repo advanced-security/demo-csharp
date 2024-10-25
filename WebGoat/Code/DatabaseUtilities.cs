@@ -9,6 +9,7 @@ using System.Text;
 using System.Configuration;
 using Mono.Data.Sqlite;
 
+// Demo change
 namespace OWASP.WebGoat.NET
 {
 	public class DatabaseUtilities
