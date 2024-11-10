@@ -13,3 +13,7 @@ WebGoat/Configuration/*.config
 # Trash Files #
 ###############
 .DS_Store
+/.vs/WebGoat.NET
+/.vscode
+/WebGoat/.vs
+/WebGoat/WebGoat.NET.csproj.user

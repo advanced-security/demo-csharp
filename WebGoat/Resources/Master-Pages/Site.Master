@@ -31,6 +31,10 @@
     <script type='text/javascript' src='<%=Page.ResolveUrl("~/Resources/client-scripts/jquery-ui-1.8.16.custom.min.js")%>'></script>
     <script type='text/javascript' src='<%=Page.ResolveUrl("~/Resources/client-scripts/jquery.autocomplete.js")%>'></script>
 
+    <!-- Inclusion of functionality from an untructed source. Script loaded from content delivery network with no integrity check. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-smooth-scroll/1.5.6/jquery.smooth-scroll.min.js"></script>
+
+
     <script type="text/javascript">
 			$.fx.speeds._default = 500;
 			$(function() {
@@ -46,8 +50,13 @@
 				});
 				
 				
-			});
-		</script>
+            });
+
+        // Incomplete string escaping or encoding
+        var name = "james bond"; 
+        var paramName = name.replace(/[\[\]]/g, '\\$&');
+
+    </script>
     
     <form id="Form1" runat="server">
     <div class="FullWidth HeaderTop HeaderGrad clearfix">
