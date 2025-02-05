@@ -1,0 +1,194 @@
+name: "Code Scanning"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  security-events: write
+  packages: read
+  pull-requests: read
+
+jobs:
+  detect_repo_languages:
+    runs-on: ubuntu-24.04
+    outputs:
+      languages: ${{ steps.detect_langs.outputs.languages }}
+      filtered_languages: ${{ steps.detect_langs.outputs.filtered_codeql_languages }}
+      non_codeql_languages: ${{ steps.detect_langs.outputs.non_codeql_languages }}
+    steps:
+      - name: Detect and Filter Programming Languages
+        id: detect_langs
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Detecting languages from the PR..."
+            pr_files=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files)
+
+            # Extract file extensions from the changed files and convert them to lowercase
+            detected_pr_langs=$(echo "$pr_files" | jq -r '.[].filename | split(".") | .[-1] | ascii_downcase' | sort -u)
+            echo "Detected extensions from PR: $detected_pr_langs"
+
+            # Create a mapping for file extensions to CodeQL supported languages and others
+            declare -A ext_to_lang=(
+              ["py"]="python"
+              ["c"]="c-cpp"
+              ["cpp"]="c-cpp"
+              ["cs"]="csharp"
+              ["go"]="go"
+              ["java"]="java-kotlin"
+              ["kt"]="java-kotlin"
+              ["rb"]="ruby"
+              ["swift"]="swift"
+              ["js"]="javascript-typescript"
+              ["ts"]="javascript-typescript"
+              ["yml"]="yaml"
+              ["yaml"]="yaml"
+              ["php"]="php"
+              ["html"]="html"
+              ["tf"]="hcl"
+              ["json"]="json"
+              ["sh"]="shell"
+              ["exs"]="elixir"
+              ["ex"]="elixir"
+            )
+
+            # Replace file extensions with the corresponding CodeQL language names
+            detected_langs=$(echo "$detected_pr_langs" | while read ext; do
+              lang=${ext_to_lang[$ext]}
+              if [ -n "$lang" ]; then
+                echo "$lang"
+              fi
+            done | sort -u | jq -R . | jq -s .)
+
+            # Debugging: Print the final result
+            echo "Detected languages from PR: $detected_langs"
+          else
+            echo "Detecting languages from the repo..."
+            detected_langs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/languages | jq -c 'keys | map(. | ascii_downcase) | map(if . == "javascript" or . == "typescript" then "javascript-typescript" elif . == "c" or . == "c++" then "c-cpp" elif . == "java" or . == "kotlin" then "java-kotlin" else . end )')
+
+            # Output the detected languages in CodeQL format
+            echo "Detected languages from repo: $detected_langs"
+          fi
+
+          # Print the detected languages to the logs
+          echo "Detected languages: $detected_langs"
+
+          # Define CodeQL-supported languages
+          codeql_langs='["c-cpp", "csharp", "go", "java-kotlin", "javascript-typescript", "python", "ruby", "swift"]'
+
+          # Filter detected languages to include only CodeQL-supported ones
+          filtered_codeql_langs=$(echo "$detected_langs" | jq -c --argjson codeql "$codeql_langs" '[.[] | select(. as $lang | $codeql | index($lang))]')
+
+          # Filter out the Non-CodeQL supported languages for Horusec scan
+          non_codeql_langs=$(echo "$detected_langs" | jq -c --argjson codeql "$codeql_langs" '[.[] | select(. as $lang | $codeql | index($lang) | not)]')
+
+          # Output filtered CodeQL languages as a comma-separated string
+          echo "filtered_codeql_languages=$(echo "$filtered_codeql_langs" | jq -c .)" >> $GITHUB_OUTPUT
+
+          # Output non-codeql languages as a comma-separated string
+          echo "non_codeql_languages=$(echo "$non_codeql_langs" | jq -c .)" >> $GITHUB_OUTPUT
+
+          # Output all languages as a comma-separated string
+          echo "languages=$(echo "$detected_langs" | jq -c .)" >> $GITHUB_OUTPUT
+
+
+  codeql-scan:
+    if: needs.detect_repo_languages.outputs.filtered_languages != '[]' # Only run if there are CodeQL languages
+    needs: detect_repo_languages
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-24.04' }}
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ${{ fromJson(needs.detect_repo_languages.outputs.filtered_languages) }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Build Mode
+        id: set-build-mode
+        run: |
+          # Set build mode based on language
+          if [[ "${{ matrix.language }}" == "c-cpp" || "${{ matrix.language }}" == "csharp" || "${{ matrix.language }}" == "go" || "${{ matrix.language }}" == "swift" ]]; then
+            echo "build-mode=autobuild" >> $GITHUB_ENV
+          elif [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
+            # Check for Maven (pom.xml) or Gradle (build.gradle, build.gradle.kts) files in the entire project
+            if find . -type f -name "pom.xml" | grep -q .; then
+              echo "build-mode=manual" >> $GITHUB_ENV
+              echo "cache=maven" >> $GITHUB_ENV
+              echo "distribution=liberica" >> $GITHUB_ENV
+            elif find . -type f \( -name "build.gradle" -o -name "build.gradle.kts" \) | grep -q .; then
+              echo "build-mode=manual" >> $GITHUB_ENV
+              echo "cache=gradle" >> $GITHUB_ENV
+              echo "distribution=temurin" >> $GITHUB_ENV
+            else
+              echo "build-mode=autobuild" >> $GITHUB_ENV
+            fi
+          else
+            echo "build-mode=none" >> $GITHUB_ENV
+          fi
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ env.build-mode }}
+
+      - name: Setup Java
+        if: ${{ env.build-mode == 'manual' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: ${{ env.distribution }}
+          architecture: x64
+          cache: ${{ env.cache }}
+
+      - name: Setup Gradle
+        if: ${{ env.build-mode == 'manual' }} && ${{ env.cache == 'gradle' }}
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      - name: Build Java/Kotlin Project with Maven/Gradle
+        id: maven-gradle-build
+        if: ${{ env.build-mode == 'manual' }}
+        run: |
+          # Check for Maven or Gradle build files in the entire directory tree
+          if find . -name "pom.xml" -type f | grep -q . && ! find . -name "mvnw" -o -name "mvnw.cmd" -type f | grep -q .; then
+            # If pom.xml exists but no Maven Wrapper, use mvn clean install
+            echo "pom.xml found, running mvn clean install..."
+            mvn clean install
+          elif find . -name "pom.xml" -type f | grep -q . && ( find . -name "mvnw" -o -name "mvnw.cmd" -type f | grep -q . ); then
+            # If pom.xml exists and mvnw or mvnw.cmd are found, use the Maven Wrapper
+            ./mvnw install -am -DenableLogback -DskipTests
+          elif find . -name "build.gradle" -o -name "build.gradle.kts" -type f | grep -q . &&  (find . -name "gradlew" -o -name "gradlew.bat" -type f | grep -q . ); then
+            # If Gradle build files are found, use Gradle
+            echo "Building using Gradle..."
+            ./gradlew build --no-daemon -x test
+          else
+            # If no recognized build file is found, skip the build
+            echo "No recognized build file found. Skipping build."
+          fi
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+        continue-on-error: true
