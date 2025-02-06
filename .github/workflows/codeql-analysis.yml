@@ -75,7 +75,7 @@ jobs:
           else
             echo "Detecting languages from the repo..."
             detected_langs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/languages | jq -c 'keys | map(. | ascii_downcase) | map(if . == "javascript" or . == "typescript" then "javascript-typescript" elif . == "c" or . == "c++" then "c-cpp" elif . == "java" or . == "kotlin" then "java-kotlin" else . end )')
+              https://api.github.com/repos/${{ github.repository }}/languages | jq -c 'keys | map(. | ascii_downcase) | map(if . == "javascript" or . == "typescript" then "javascript-typescript" elif . == "c" or . == "c++" then "c-cpp" elif . == "c#" then "csharp" elif . == "java" or . == "kotlin" then "java-kotlin" else . end )')
 
             # Output the detected languages in CodeQL format
             echo "Detected languages from repo: $detected_langs"
