@@ -159,7 +159,7 @@ jobs:
           cache: ${{ env.cache }}
 
       - name: Setup Gradle
-        if: ${{ env.build-mode == 'manual' }} && ${{ env.cache == 'gradle' }}
+        if: ${{ env.build-mode == 'manual' && env.cache == 'gradle'}}
         uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
