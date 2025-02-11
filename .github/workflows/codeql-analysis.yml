@@ -126,7 +126,7 @@ jobs:
         id: set-build-mode
         run: |
           # Set build mode based on language
-          if [[ "${{ matrix.language }}" == "c-cpp" || "${{ matrix.language }}" == "csharp" || "${{ matrix.language }}" == "go" || "${{ matrix.language }}" == "swift" ]]; then
+          if [[ "${{ matrix.language }}" == "ruby" || "${{ matrix.language }}" == "python" || "${{ matrix.language }}" == "go" || "${{ matrix.language }}" == "swift" ]]; then
             echo "build-mode=autobuild" >> $GITHUB_ENV
           elif [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
             # Check for Maven (pom.xml) or Gradle (build.gradle, build.gradle.kts) files in the entire project
@@ -138,8 +138,6 @@ jobs:
               echo "build-mode=manual" >> $GITHUB_ENV
               echo "cache=gradle" >> $GITHUB_ENV
               echo "distribution=temurin" >> $GITHUB_ENV
-            else
-              echo "build-mode=autobuild" >> $GITHUB_ENV
             fi
           else
             echo "build-mode=none" >> $GITHUB_ENV
